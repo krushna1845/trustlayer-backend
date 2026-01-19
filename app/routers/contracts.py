@@ -44,4 +44,15 @@ async def get_contracts(
 @router.get("/{contract_id}", response_model=ContractResponse)
 async def get_contract(
     contract_id: int,
-    current_user: User = Depends(get_current_
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get a specific contract"""
+    contract = ContractService.get_contract(db, contract_id, current_user.id)
+    if not contract:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Contract not found"
+        )
+    return contract
+
